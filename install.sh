@@ -17,19 +17,29 @@ check_java() {
 
 # Function to install Minecraft server
 install_server() {
-    echo "请输入 Minecraft 分配的内存大小 (例如：2G): "
-    read memory_size
-    echo "设置 Minecraft 服务器内存为 $memory_size"
+    echo "请输入 Minecraft 服务器下载链接: "
+    read server_url
+    echo "从 $server_url 下载 Minecraft 服务器..."
 
-    echo "下载 Minecraft 服务器..."
-    wget -O server.jar https://piston-data.mojang.com/v1/objects/6bce4ef400e4efaa63a13d5e6f6b500be969ef81/server.jar
+    # 下载 Minecraft 服务器
+    wget -O server.jar $server_url
+    if [ $? -ne 0 ]; then
+        echo "下载失败，请检查 URL 是否有效"
+        exit 1
+    fi
+    echo "Minecraft 服务器下载完成"
 
-    # Create eula.txt and set eula=true
+    # 创建 eula.txt 并设置 eula=true
     echo "eula=true" > $EULA_FILE
+    echo "eula.txt 配置完成"
 }
 
 # Function to start the Minecraft server
 start_server() {
+    echo "请输入 Minecraft 分配的内存大小 (例如：2G): "
+    read memory_size
+    echo "设置 Minecraft 服务器内存为 $memory_size"
+
     echo "启动 Minecraft 服务器..."
     java -Xmx$memory_size -Xms$memory_size -jar server.jar nogui
 }
